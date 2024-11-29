@@ -80,8 +80,8 @@ const SigninForm = () => {
                 </div>
             
             </div>
-{/* 
-            {message && (
+
+            {/* {message && (
             <div className={`rounded-md p-4 ${
                 message.type === 'success' 
                 ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300' 

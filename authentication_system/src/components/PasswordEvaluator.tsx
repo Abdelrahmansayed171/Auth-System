@@ -1,8 +1,9 @@
-interface PasswordStrengthProps {
+
+interface PasswordEvaluatorProps {
   password: string;
 }
 
-export function PasswordStrength({ password }: PasswordStrengthProps) {
+export function PasswordEvaluator({ password }: PasswordEvaluatorProps) {
   const getStrength = (pass: string) => {
     let score = 0;
     if (!pass) return score;
