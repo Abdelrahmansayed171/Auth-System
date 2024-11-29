@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import { useAuthContext } from '../contexts/AuthContext'
 import AuthLayout from './AuthLayout';
 import { EyeOff, Eye } from 'lucide-react';
@@ -108,15 +108,15 @@ const SigninForm = () => {
 
             <SocialLogin />
 
-            {/* <div className="text-center">
+            <div className="text-center">
             <button
                 type="button"
-                onClick={toggleForm}
+                // onClick={toggleForm}
                 className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
             >
                 Need an account? Sign up
             </button>
-            </div> */}
+            </div>
         </form>
     </AuthLayout>
   )
