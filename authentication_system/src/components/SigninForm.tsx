@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import { useAuthContext } from '../contexts/AuthContext'
 import AuthLayout from './AuthLayout';
 import { EyeOff, Eye } from 'lucide-react';
+import SocialLogin from './SocialLogin';
 const SigninForm = () => {
   
     const {formData, setFormData} = useAuthContext();

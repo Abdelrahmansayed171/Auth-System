@@ -1,11 +1,12 @@
 import SigninForm from './components/SigninForm'
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    <>
-      <SigninForm/>
-    </>
-  )
+    <AuthProvider>
+      <SigninForm />
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;
