@@ -1,49 +1,99 @@
-import { Parentheses } from 'lucide-react';
-import React, {useState, useContext, createContext} from 'react'
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import { AuthState, AuthContextType, LoginCredentials, RegisterCredentials } from '../types/auth';
+import { authService } from '../services/authService';
 
-type AuthContextType = {
-    isLogin: boolean;
-    formData: {
-      email: string;
-      password: string;
-      name: string;
-      rememberMe: boolean;
-    };
-    setFormData: (newFormData: AuthContextType['formData']) => void;
-    toggleForm: () => void;
-}
+const initialState: AuthState = {
+  user: null,
+  isAuthenticated: false,
+  isLoading: false,
+  error: null,
+};
 
-const defaultFormData = {
-    email: '',
-    name: '',
-    password: '',
-    rememberMe: false,
-}
+type AuthAction =
+  | { type: 'AUTH_START' }
+  | { type: 'AUTH_SUCCESS'; payload: AuthState['user'] }
+  | { type: 'AUTH_ERROR'; payload: string }
+  | { type: 'AUTH_LOGOUT' }
+  | { type: 'CLEAR_ERROR' };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+  switch (action.type) {
+    case 'AUTH_START':
+      return { ...state, isLoading: true, error: null };
+    case 'AUTH_SUCCESS':
+      return {
+        ...state,
+        isLoading: false,
+        isAuthenticated: true,
+        user: action.payload,
+        error: null,
+      };
+    case 'AUTH_ERROR':
+      return {
+        ...state,
+        isLoading: false,
+        error: action.payload,
+      };
+    case 'AUTH_LOGOUT':
+      return initialState;
+    case 'CLEAR_ERROR':
+      return { ...state, error: null };
+    default:
+      return state;
+  }
+};
 
-export const AuthProvider: React.FC<{children: React.ReactNode}>  = ({children}) => {
-    const [isLogin, setIsLogin] = useState(true)
-    const [formData, setFormData] = useState(defaultFormData)
-    
-    const toggleForm = () =>{
-        setIsLogin(!isLogin) // change to sign-up form
-        setFormData(defaultFormData) // reset the form 
-        console.log(isLogin);
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  const login = useCallback(async (credentials: LoginCredentials) => {
+    try {
+      dispatch({ type: 'AUTH_START' });
+      const user = await authService.login(credentials);
+      dispatch({ type: 'AUTH_SUCCESS', payload: user });
+    } catch (error) {
+      dispatch({ type: 'AUTH_ERROR', payload: (error as Error).message });
     }
+  }, []);
 
-    return(
-        <AuthContext.Provider value={{isLogin, formData, setFormData,toggleForm}}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  const register = useCallback(async (credentials: RegisterCredentials) => {
+    try {
+      dispatch({ type: 'AUTH_START' });
+      const user = await authService.register(credentials);
+      dispatch({ type: 'AUTH_SUCCESS', payload: user });
+    } catch (error) {
+      dispatch({ type: 'AUTH_ERROR', payload: (error as Error).message });
+    }
+  }, []);
 
-export const useAuthContext = () => {
-    const context = useContext(AuthContext)
-    
-    if(!context)
-        throw new Error('useAuthContext must be used within an AuthProvider')
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+      dispatch({ type: 'AUTH_LOGOUT' });
+    } catch (error) {
+      dispatch({ type: 'AUTH_ERROR', payload: (error as Error).message });
+    }
+  }, []);
 
-    return context
-}
+  const clearError = useCallback(() => {
+    dispatch({ type: 'CLEAR_ERROR' });
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{ ...state, login, register, logout, clearError }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
