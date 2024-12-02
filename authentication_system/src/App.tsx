@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { AuthLayout } from './components/AuthLayout';
-import { PasswordStrength } from './components/PasswordStrength';
-import { SocialLogin } from './components/SocialLogin';
+import { PasswordEvaluator } from './components/PasswordEvaluator';
+import SocialLogin from './components/SocialLogin';
 
 function App() {
   const [isLogin, setIsLogin] = useState(true);
@@ -102,7 +102,7 @@ function App() {
                 )}
               </button>
             </div>
-            {!isLogin && <PasswordStrength password={formData.password} />}
+            {!isLogin && <PasswordEvaluator password={formData.password} />}
           </div>
 
           {isLogin && (
