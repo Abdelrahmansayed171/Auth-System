@@ -7,7 +7,7 @@ import SocialLogin from './SocialLogin';
 
 
 const SignupForm = () => {
-    const {formData, setFormData} = useAuthContext();
+    const {formData, setFormData, toggleForm} = useAuthContext();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -109,7 +109,7 @@ const SignupForm = () => {
           <div className="text-center">
             <button
               type="button"
-            //   onClick={toggleForm}
+              onClick={toggleForm} // Use the toggleForm function
               className="text-sm text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium"
             >
               Already have an account? Sign in

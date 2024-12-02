@@ -29,6 +29,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}>  = ({children})
     const toggleForm = () =>{
         setIsLogin(!isLogin) // change to sign-up form
         setFormData(defaultFormData) // reset the form 
+        console.log(isLogin);
     }
 
     return(
