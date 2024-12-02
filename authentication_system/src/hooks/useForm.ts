@@ -27,14 +27,15 @@ export function useForm<T extends Record<string, any>>({
 
   const validateField = useCallback(
     (name: keyof T, value: any) => {
-      if (!validationSchema) return '';
-
+      if (!validationSchema || !(validationSchema instanceof z.ZodObject)) return '';
+  
       try {
-        validationSchema.shape[name as string].parse(value);
+        const fieldSchema = validationSchema.shape[name as string]; // Access field directly from shape
+        fieldSchema.parse(value); // Validate the field
         return '';
       } catch (error) {
         if (error instanceof z.ZodError) {
-          return error.errors[0].message;
+          return error.errors[0].message; // Return the first error message
         }
         return 'Invalid value';
       }
